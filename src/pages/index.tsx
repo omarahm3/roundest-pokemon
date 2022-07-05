@@ -13,6 +13,7 @@ const Home: NextPage = () => {
 
   const firstPokemon  = trpc.useQuery(["get-pokemon-by-id", { id: first }]);
   const secondPokemon = trpc.useQuery(["get-pokemon-by-id", { id: second }]);
+  const voteMutation  = trpc.useMutation(['cast-vote']);
 
   if (firstPokemon.isLoading || secondPokemon.isLoading) {
     return null
@@ -20,8 +21,14 @@ const Home: NextPage = () => {
 
   const voteForRoundest = (selected: number) => {
     // TODO: fire mutation to persist changes
+    if (selected === first) {
+      voteMutation.mutate({ votedFor: first, votedAgainst: second });
+    } else {
+      voteMutation.mutate({ votedFor: second, votedAgainst: first });
+    }
     updateIds(getOptionsForVote());
   }
+
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
